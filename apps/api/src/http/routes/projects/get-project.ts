@@ -1,11 +1,12 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
+import { prisma } from '../../lib/prisma'
 import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
-import { UnauthorizedError } from '../_erros/unauthorized-error'
-import { prisma } from '../../lib/prisma'
 import { BadRequestError } from '../_erros/bad-request-error'
+import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function getProject(app: FastifyInstance) {
   app
@@ -82,6 +83,6 @@ export async function getProject(app: FastifyInstance) {
         }
 
         return reply.send({ project })
-      }
+      },
     )
 }

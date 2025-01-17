@@ -1,11 +1,12 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { roleSchema } from '@saas/auth'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
+import { BadRequestError } from '../_erros/bad-request-error'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function createInvite(app: FastifyInstance) {
@@ -21,10 +22,10 @@ export async function createInvite(app: FastifyInstance) {
           security: [{ bearerAuth: [] }],
           body: z.object({
             email: z.string().email(),
-            role: roleSchema
+            role: roleSchema,
           }),
           params: z.object({
-            slug: z.string()
+            slug: z.string(),
           }),
           response: {
             201: z.object({
@@ -35,65 +36,71 @@ export async function createInvite(app: FastifyInstance) {
       },
       async (request, reply) => {
         const { slug } = request.params
-       
+
         const userId = await request.getCurrentUserId()
         const { organization, membership } =
           await request.getUserMembership(slug)
         const { cannot } = getUserPermissions(userId, membership.role)
-       
+
         if (cannot('create', 'Invite')) {
           throw new UnauthorizedError(
-            `You're not allowed to create new invites.`
+            `You're not allowed to create new invites.`,
           )
         }
 
         const { email, role } = request.body
-        
-        const [, domain] = email 
 
-        if(organization.shouldAttachUsersByDomain && organization.domain === domain){
-          throw new 
-          BadRequestError(`Users with ${domain} domain will join your organization automatically on login.`)
+        const [, domain] = email
+
+        if (
+          organization.shouldAttachUsersByDomain &&
+          organization.domain === domain
+        ) {
+          throw new BadRequestError(
+            `Users with ${domain} domain will join your organization automatically on login.`,
+          )
         }
 
         const inviteWithSameEmail = await prisma.invite.findUnique({
           where: {
             email_organizationId: {
               email,
-              organizationId: organization.id
-            }
-          }
+              organizationId: organization.id,
+            },
+          },
         })
 
-        if(inviteWithSameEmail){
-          throw new BadRequestError('Another invite with same e-mail already exists.')
+        if (inviteWithSameEmail) {
+          throw new BadRequestError(
+            'Another invite with same e-mail already exists.',
+          )
         }
 
         const memberWithSameEmail = await prisma.member.findFirst({
           where: {
             organizationId: organization.id,
             user: {
-              email
-            }
-          }
+              email,
+            },
+          },
         })
 
-        if(memberWithSameEmail){
+        if (memberWithSameEmail) {
           throw new BadRequestError('A member with same e-mail already exists.')
         }
 
-       const invite = await prisma.invite.create({
-          data:{
+        const invite = await prisma.invite.create({
+          data: {
             organizationId: organization.id,
             email,
             role,
-            authorId: userId
-          }
+            authorId: userId,
+          },
         })
 
         return reply.status(201).send({
-          inviteId: invite.id
+          inviteId: invite.id,
         })
-      }
+      },
     )
 }

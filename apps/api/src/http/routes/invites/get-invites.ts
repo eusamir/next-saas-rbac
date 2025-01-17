@@ -1,11 +1,10 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { createSlug } from '../../utils/create-slug'
-import { roleSchema } from '@saas/auth'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
 
@@ -21,7 +20,7 @@ export async function getInvites(app: FastifyInstance) {
           summary: 'Get all organization invites',
           security: [{ bearerAuth: [] }],
           params: z.object({
-            slug: z.string()
+            slug: z.string(),
           }),
           response: {
             200: z.object({
@@ -38,47 +37,47 @@ export async function getInvites(app: FastifyInstance) {
                     })
                     .nullable(),
                 }),
-              )
+              ),
             }),
           },
         },
       },
       async (request) => {
         const { slug } = request.params
-       
+
         const userId = await request.getCurrentUserId()
         const { organization, membership } =
           await request.getUserMembership(slug)
         const { cannot } = getUserPermissions(userId, membership.role)
-       
+
         if (cannot('get', 'Invite')) {
           throw new UnauthorizedError(
-            `You're not allowed to get organization invites.`
+            `You're not allowed to get organization invites.`,
           )
         }
 
         const invites = await prisma.invite.findMany({
           where: {
-            organizationId: organization.id
+            organizationId: organization.id,
           },
-          select:{
+          select: {
             id: true,
             email: true,
             role: true,
             createdAt: true,
             author: {
-              select:{
+              select: {
                 id: true,
-                name: true
-              }
-            }
+                name: true,
+              },
+            },
           },
-          orderBy:{
-            createdAt: 'desc'
-          }
+          orderBy: {
+            createdAt: 'desc',
+          },
         })
 
         return { invites }
-      }
+      },
     )
 }

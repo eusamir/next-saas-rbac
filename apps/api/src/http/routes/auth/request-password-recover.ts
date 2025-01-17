@@ -1,9 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { compare } from 'bcryptjs'
-import { BadRequestError } from '../_erros/bad-request-error'
 import { auth } from '../../middlewares/auth'
 
 export async function requestPasswordRecover(app: FastifyInstance) {
@@ -45,6 +44,6 @@ export async function requestPasswordRecover(app: FastifyInstance) {
         console.log('Password recover token:', code)
 
         return reply.status(201).send()
-      }
+      },
     )
 }

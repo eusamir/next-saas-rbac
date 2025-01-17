@@ -1,12 +1,12 @@
+import { organizationSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { organizationSchema } from '@saas/auth'
-import { UnauthorizedError } from '../_erros/unauthorized-error'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
+import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function deleteOrganization(app: FastifyInstance) {
   app
@@ -42,16 +42,16 @@ export async function deleteOrganization(app: FastifyInstance) {
 
         if (cannot('delete', authOrganization)) {
           throw new UnauthorizedError(
-            'You are not allowed to shutdown this organization.'
+            'You are not allowed to shutdown this organization.',
           )
         }
-        
+
         await prisma.organization.delete({
           where: {
             id: organization.id,
           },
         })
         return reply.status(204).send()
-      }
+      },
     )
 }

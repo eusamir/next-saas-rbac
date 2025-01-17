@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
 import { auth } from '../../middlewares/auth'
 
 export async function getOrganization(app: FastifyInstance) {
@@ -42,6 +43,6 @@ export async function getOrganization(app: FastifyInstance) {
         return {
           organization,
         }
-      }
+      },
     )
 }

@@ -1,11 +1,12 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
+import { prisma } from '../../lib/prisma'
 import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
-import { prisma } from '../../lib/prisma'
-import { roleSchema } from '@saas/auth'
 
 export async function getMembers(app: FastifyInstance) {
   app
@@ -31,7 +32,7 @@ export async function getMembers(app: FastifyInstance) {
                   name: z.string().nullable(),
                   email: z.string().email(),
                   avatarUrl: z.string().nullable(),
-                })
+                }),
               ),
             }),
           },
@@ -47,7 +48,7 @@ export async function getMembers(app: FastifyInstance) {
 
         if (cannot('get', 'User')) {
           throw new UnauthorizedError(
-            `You're not allowed to see organization members.`
+            `You're not allowed to see organization members.`,
           )
         }
 
@@ -79,10 +80,10 @@ export async function getMembers(app: FastifyInstance) {
               ...member,
               userId,
             }
-          }
+          },
         )
 
         return reply.send({ members: membersWithRoles })
-      }
+      },
     )
 }

@@ -1,12 +1,13 @@
+import { organizationSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { organizationSchema } from '@saas/auth'
-import { UnauthorizedError } from '../_erros/unauthorized-error'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
+import { BadRequestError } from '../_erros/bad-request-error'
+import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function updateOrganization(app: FastifyInstance) {
   app
@@ -49,7 +50,7 @@ export async function updateOrganization(app: FastifyInstance) {
 
         if (cannot('update', authOrganization)) {
           throw new UnauthorizedError(
-            'You are not allowed to update this organization.'
+            'You are not allowed to update this organization.',
           )
         }
 
@@ -65,7 +66,7 @@ export async function updateOrganization(app: FastifyInstance) {
 
           if (organizationByDomain) {
             throw new BadRequestError(
-              'Another organization with same domain already exists'
+              'Another organization with same domain already exists',
             )
           }
         }
@@ -81,6 +82,6 @@ export async function updateOrganization(app: FastifyInstance) {
           },
         })
         return reply.status(204).send()
-      }
+      },
     )
 }

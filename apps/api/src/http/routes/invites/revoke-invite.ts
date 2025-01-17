@@ -1,11 +1,11 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { roleSchema } from '@saas/auth'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
+import { BadRequestError } from '../_erros/bad-request-error'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function revokeInvite(app: FastifyInstance) {
@@ -21,45 +21,43 @@ export async function revokeInvite(app: FastifyInstance) {
           security: [{ bearerAuth: [] }],
           params: z.object({
             slug: z.string(),
-            inviteId: z.string().uuid()
+            inviteId: z.string().uuid(),
           }),
           response: {
-            204: z.null()
+            204: z.null(),
           },
         },
       },
       async (request, reply) => {
         const { slug, inviteId } = request.params
-       
+
         const userId = await request.getCurrentUserId()
         const { organization, membership } =
           await request.getUserMembership(slug)
         const { cannot } = getUserPermissions(userId, membership.role)
-       
+
         if (cannot('delete', 'Invite')) {
-          throw new UnauthorizedError(
-            `You're not allowed to delete an invite.`
-          )
+          throw new UnauthorizedError(`You're not allowed to delete an invite.`)
         }
-        
-        const invite  = await prisma.invite.findUnique({
+
+        const invite = await prisma.invite.findUnique({
           where: {
             id: inviteId,
-            organizationId: organization.id
-          }
+            organizationId: organization.id,
+          },
         })
 
-        if(!invite){
+        if (!invite) {
           throw new BadRequestError('Invite not found.')
         }
-        
+
         await prisma.invite.delete({
           where: {
-            id: inviteId
-          }
+            id: inviteId,
+          },
         })
 
         return reply.status(204).send()
-      }
+      },
     )
 }

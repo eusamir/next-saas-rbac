@@ -1,11 +1,12 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
+import { prisma } from '../../lib/prisma'
 import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
-import { prisma } from '../../lib/prisma'
-import { roleSchema } from '@saas/auth'
 
 export async function updateMembers(app: FastifyInstance) {
   app
@@ -40,7 +41,7 @@ export async function updateMembers(app: FastifyInstance) {
 
         if (cannot('update', 'User')) {
           throw new UnauthorizedError(
-            `You're not allowed to see update this member.`
+            `You're not allowed to see update this member.`,
           )
         }
 
@@ -57,6 +58,6 @@ export async function updateMembers(app: FastifyInstance) {
         })
 
         return reply.status(204).send()
-      }
+      },
     )
 }

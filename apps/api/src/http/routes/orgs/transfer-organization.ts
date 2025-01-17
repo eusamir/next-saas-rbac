@@ -1,12 +1,13 @@
+import { organizationSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { BadRequestError } from '../_erros/bad-request-error'
-import { organizationSchema } from '@saas/auth'
-import { UnauthorizedError } from '../_erros/unauthorized-error'
+import { auth } from '../../middlewares/auth'
 import { getUserPermissions } from '../../utils/get-users-permissions'
+import { BadRequestError } from '../_erros/bad-request-error'
+import { UnauthorizedError } from '../_erros/unauthorized-error'
 
 export async function transferOrganization(app: FastifyInstance) {
   app
@@ -37,7 +38,6 @@ export async function transferOrganization(app: FastifyInstance) {
         const { membership, organization } =
           await request.getUserMembership(slug)
 
-
         const authOrganization = organizationSchema.parse({
           organization,
         })
@@ -46,7 +46,7 @@ export async function transferOrganization(app: FastifyInstance) {
 
         if (cannot('update', authOrganization)) {
           throw new UnauthorizedError(
-            'You are not allowed to transfer this organization.'
+            'You are not allowed to transfer this organization.',
           )
         }
 
@@ -54,35 +54,37 @@ export async function transferOrganization(app: FastifyInstance) {
 
         const transferToMembership = await prisma.member.findUnique({
           where: {
-            organizationId_userId:{
+            organizationId_userId: {
               organizationId: organization.id,
-              userId: transferToUserId
-            }
-          }
+              userId: transferToUserId,
+            },
+          },
         })
 
-        if(!transferToMembership){
-          throw new BadRequestError('Target user is not a member of this organization.')
+        if (!transferToMembership) {
+          throw new BadRequestError(
+            'Target user is not a member of this organization.',
+          )
         }
 
         await prisma.$transaction([
-           prisma.member.update({
+          prisma.member.update({
             where: {
               organizationId_userId: {
                 organizationId: organization.id,
-                userId: transferToUserId
-              }
+                userId: transferToUserId,
+              },
             },
             data: {
-              role: 'ADMIN'
-            }
+              role: 'ADMIN',
+            },
           }),
           prisma.organization.update({
             where: { id: organization.id },
-            data: { ownerId: transferToUserId }
-          })
+            data: { ownerId: transferToUserId },
+          }),
         ])
         return reply.status(204).send()
-      }
+      },
     )
 }

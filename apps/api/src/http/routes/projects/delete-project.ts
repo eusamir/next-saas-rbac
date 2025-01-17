@@ -1,12 +1,13 @@
+import { projectSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
+import { auth } from '../../middlewares/auth'
+import { getUserPermissions } from '../../utils/get-users-permissions'
 import { BadRequestError } from '../_erros/bad-request-error'
 import { UnauthorizedError } from '../_erros/unauthorized-error'
-import { getUserPermissions } from '../../utils/get-users-permissions'
-import { projectSchema } from '@saas/auth'
 
 export async function deleteProject(app: FastifyInstance) {
   app
@@ -21,7 +22,7 @@ export async function deleteProject(app: FastifyInstance) {
           security: [{ bearerAuth: [] }],
           params: z.object({
             slug: z.string(),
-            projectId: z.string().uuid()
+            projectId: z.string().uuid(),
           }),
           response: {
             204: z.null(),
@@ -36,17 +37,17 @@ export async function deleteProject(app: FastifyInstance) {
           await request.getUserMembership(slug)
 
         const project = await prisma.project.findUnique({
-          where:{
+          where: {
             id: projectId,
-            organizationId: organization.id
-          }
+            organizationId: organization.id,
+          },
         })
 
         const authProject = projectSchema.parse({
           project,
         })
 
-        if(!project){
+        if (!project) {
           throw new BadRequestError('Project not found')
         }
 
@@ -54,16 +55,16 @@ export async function deleteProject(app: FastifyInstance) {
 
         if (cannot('delete', authProject)) {
           throw new UnauthorizedError(
-            'You are not allowed to delete this project.'
+            'You are not allowed to delete this project.',
           )
         }
-        
+
         await prisma.project.delete({
           where: {
             id: project.id,
           },
         })
         return reply.status(204).send()
-      }
+      },
     )
 }

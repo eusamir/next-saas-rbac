@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { compare } from 'bcryptjs'
-import { BadRequestError } from '../_erros/bad-request-error'
 import { auth } from '../../middlewares/auth'
+import { BadRequestError } from '../_erros/bad-request-error'
 
 export async function getProfile(app: FastifyInstance) {
   app
@@ -16,10 +16,10 @@ export async function getProfile(app: FastifyInstance) {
         schema: {
           tags: ['auth'],
           summary: 'Get authenticated userprofile',
-          security:[
+          security: [
             {
-              bearerAuth: []
-            }
+              bearerAuth: [],
+            },
           ],
           response: {
             200: z.object({
@@ -53,6 +53,6 @@ export async function getProfile(app: FastifyInstance) {
         }
 
         return reply.send({ user })
-      }
+      },
     )
 }

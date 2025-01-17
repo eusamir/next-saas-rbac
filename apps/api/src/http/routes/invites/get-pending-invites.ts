@@ -1,10 +1,11 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { auth } from '../../middlewares/auth'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
+import { auth } from '../../middlewares/auth'
 import { BadRequestError } from '../_erros/bad-request-error'
-import { roleSchema } from '@saas/auth'
 
 export async function getPendingInvites(app: FastifyInstance) {
   app
@@ -30,7 +31,7 @@ export async function getPendingInvites(app: FastifyInstance) {
                       name: z.string().nullable(),
                     })
                     .nullable(),
-                })
+                }),
               ),
             }),
           },
@@ -74,6 +75,6 @@ export async function getPendingInvites(app: FastifyInstance) {
         })
 
         return { invites }
-      }
+      },
     )
 }

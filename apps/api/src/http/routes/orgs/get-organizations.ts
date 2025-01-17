@@ -1,9 +1,10 @@
+import { roleSchema } from '@saas/auth'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { auth } from '../../middlewares/auth'
+
 import { prisma } from '../../lib/prisma'
-import { roleSchema } from '@saas/auth'
+import { auth } from '../../middlewares/auth'
 
 export async function getOrganizations(app: FastifyInstance) {
   app
@@ -25,7 +26,7 @@ export async function getOrganizations(app: FastifyInstance) {
                   slug: z.string(),
                   avatarUrl: z.string().url().nullable(),
                   role: roleSchema,
-                })
+                }),
               ),
             }),
           },
@@ -64,12 +65,12 @@ export async function getOrganizations(app: FastifyInstance) {
               ...org,
               role: members[0].role,
             }
-          }
+          },
         )
 
         return {
           organizations: organizationsWithUserRole,
         }
-      }
+      },
     )
 }

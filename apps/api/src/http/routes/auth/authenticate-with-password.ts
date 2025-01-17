@@ -1,8 +1,9 @@
+import { compare } from 'bcryptjs'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+
 import { prisma } from '../../lib/prisma'
-import { compare } from 'bcryptjs'
 import { BadRequestError } from '../_erros/bad-request-error'
 
 export async function authenticateWithPassword(app: FastifyInstance) {
@@ -40,7 +41,7 @@ export async function authenticateWithPassword(app: FastifyInstance) {
 
       const isPasswordValid = await compare(
         password,
-        userFromEmail.passwordHash
+        userFromEmail.passwordHash,
       )
 
       if (!isPasswordValid) {
@@ -55,10 +56,10 @@ export async function authenticateWithPassword(app: FastifyInstance) {
           sign: {
             expiresIn: '7d',
           },
-        }
+        },
       )
 
       return reply.status(201).send({ token })
-    }
+    },
   )
 }

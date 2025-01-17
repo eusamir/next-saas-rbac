@@ -1,9 +1,10 @@
+import { env } from '@saas/env'
 import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { BadRequestError } from '../_erros/bad-request-error'
+
 import { prisma } from '../../lib/prisma'
-import { env } from '@saas/env'
+import { BadRequestError } from '../_erros/bad-request-error'
 
 export async function authenticateWithGithub(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -26,19 +27,19 @@ export async function authenticateWithGithub(app: FastifyInstance) {
       const { code } = request.body
 
       const githOAuthUrl = new URL(
-        'https://github.com/login/oauth/access_token'
+        'https://github.com/login/oauth/access_token',
       )
 
       githOAuthUrl.searchParams.set('client_id', env.GITHUB_OAUTH_CLIENT_ID)
 
       githOAuthUrl.searchParams.set(
         'client_secret',
-        env.GITHUB_OAUTH_CLIENT_SECRET
+        env.GITHUB_OAUTH_CLIENT_SECRET,
       )
 
       githOAuthUrl.searchParams.set(
         'redirect_uri',
-        env.GITHUB_OAUTH_CLIENT_REDIRECT_URI
+        env.GITHUB_OAUTH_CLIENT_REDIRECT_URI,
       )
 
       githOAuthUrl.searchParams.set('code', code)
@@ -86,7 +87,7 @@ export async function authenticateWithGithub(app: FastifyInstance) {
 
       if (email === null) {
         throw new BadRequestError(
-          'Your Github account must hava an email to authenticate.'
+          'Your Github account must hava an email to authenticate.',
         )
       }
 
@@ -131,10 +132,10 @@ export async function authenticateWithGithub(app: FastifyInstance) {
           sign: {
             expiresIn: '7d',
           },
-        }
+        },
       )
 
       return reply.status(201).send({ token })
-    }
+    },
   )
 }
