@@ -1,0 +1,24 @@
+{
+  "name": "@saas/eslint-config",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./library": "./library.cjs",
+    "./next-js": "./next.js"
+  },
+  "files": [
+    "library.cjs",
+    "next.cjs",
+    "node.cjs"
+  ],
+  "devDependencies": {
+    "@rocketseat/eslint-config": "^2.2.2",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "@saas/prettier": "workspace:*"
+  },
+  "prettier":"@saas/prettier",
+  "eslintConfig": {
+    "extends":["./library.cjs"]
+  }
+}

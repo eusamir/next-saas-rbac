@@ -3,5 +3,11 @@
     {
       "mode": "auto"
     }
-  ]
+  ],
+  "files.autoSave": "afterDelay",
+  "editor.formatOnSave": true,
+  "files.refactoring.autoSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  }
 }

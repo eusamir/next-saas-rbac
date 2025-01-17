@@ -1,0 +1,112 @@
+import {fastify} from 'fastify'
+import fastifyCors from '@fastify/cors'
+import { jsonSchemaTransform, serializerCompiler, validatorCompiler, ZodTypeProvider } from 'fastify-type-provider-zod'
+import fastifySwagger from '@fastify/swagger'
+import fastifyJwt from '@fastify/jwt'
+import fastifySwaggerUI from '@fastify/swagger-ui';
+import { createAccount } from './routes/auth/create-account';
+import { authenticateWithPassword } from './routes/auth/authenticate-with-password';
+import { getProfile } from './routes/auth/get-profile'
+import { errorHandler } from './error-handler'
+import { requestPasswordRecover } from './routes/auth/request-password-recover'
+import { resetPassword } from './routes/auth/reset-password'
+import { authenticateWithGithub } from './routes/auth/authenticate-with-github'
+import { env } from '@saas/env'
+import { createOrganization } from './routes/orgs/create-organization'
+import { getMembership } from './routes/orgs/get-membership'
+import { getOrganization } from './routes/orgs/get-organization'
+import { getOrganizations } from './routes/orgs/get-organizations'
+import { updateOrganization } from './routes/orgs/update-organization'
+import { deleteOrganization } from './routes/orgs/shutdown-organization'
+import { transferOrganization } from './routes/orgs/transfer-organization'
+import { createProject } from './routes/projects/create-project'
+import { deleteProject } from './routes/projects/delete-project'
+import { getProject } from './routes/projects/get-project'
+import { updateProject } from './routes/projects/update-project'
+import { getMembers } from './routes/members/get-members'
+import { updateMembers } from './routes/members/update-member'
+import { removeMembers } from './routes/members/remove-member'
+import { createInvite } from './routes/invites/create-invite'
+import { getInvite } from './routes/invites/get-invite'
+import { getInvites } from './routes/invites/get-invites'
+import { acceptInvite } from './routes/invites/accept-invite'
+import { rejectInvite } from './routes/invites/reject-invite'
+import { revokeInvite } from './routes/invites/revoke-invite'
+import { getPendingInvites } from './routes/invites/get-pending-invites'
+import { getOrganizationBilling } from './routes/billing/get-organization-billing'
+
+const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.setSerializerCompiler(serializerCompiler)
+app.setValidatorCompiler(validatorCompiler)
+
+app.setErrorHandler(errorHandler)
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'next.js saas',
+      description: 'full-stack saas app with multi-tenant & rbac',
+      version: '1.0.0',
+    },
+    components:{
+      securitySchemes:{
+        bearerAuth:{
+          type:'http',
+          scheme:'bearer',
+          bearerFormat:'JWTS'
+        }
+      }
+    }
+  },
+  transform: jsonSchemaTransform,
+  });
+  
+app.register(fastifySwaggerUI,{
+  routePrefix:'/docs'
+})
+
+app.register(fastifyJwt,{
+  secret: env.JWT_SECRET
+})
+
+app.register(fastifyCors)
+app.register(createAccount)
+app.register(authenticateWithPassword)
+app.register(getProfile)
+app.register(requestPasswordRecover)
+app.register(resetPassword)
+app.register(authenticateWithGithub)
+
+
+app.register(createOrganization)
+app.register(getMembership)
+app.register(getOrganization)
+app.register(getOrganizations)
+app.register(updateOrganization)
+app.register(deleteOrganization)
+app.register(transferOrganization)
+
+app.register(createProject)
+app.register(deleteProject)
+app.register(getProject)
+app.register(updateProject)
+
+
+app.register(getMembers)
+app.register(updateMembers)
+app.register(removeMembers)
+
+app.register(createInvite)
+app.register(getInvite)
+app.register(getInvites)
+app.register(acceptInvite)
+app.register(rejectInvite)
+app.register(revokeInvite)
+app.register(getPendingInvites)
+
+app.register(getOrganizationBilling)
+
+app.listen({ port: env.SERVER_PORT }).then(()=>{
+  console.log('Server is running in port 3333')
+})
