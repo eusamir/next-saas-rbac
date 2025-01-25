@@ -4,15 +4,13 @@ interface getProfileResponse {
   user: {
     id: string
     name: string | null
-    emai: string
+    email: string
     avatarUrl: string | null
   }
 }
 
 export async function getProfile() {
   const result = await api.get('profile').json<getProfileResponse>()
-
-  console.log(result)
 
   return result
 }
