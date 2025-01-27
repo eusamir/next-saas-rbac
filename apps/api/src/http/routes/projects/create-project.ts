@@ -13,7 +13,7 @@ export async function createProject(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-      '/organization/:slug/projects',
+      '/organizations/:slug/projects',
       {
         schema: {
           tags: ['Projects'],
@@ -43,21 +43,22 @@ export async function createProject(app: FastifyInstance) {
 
         if (cannot('create', 'Project')) {
           throw new UnauthorizedError(
-            `You're not allowed to create a new project.`,
+            `You're not allowed to create new projects.`,
           )
         }
 
-        const { description, name } = request.body
+        const { name, description } = request.body
 
         const project = await prisma.project.create({
           data: {
             name,
-            slug: createSlug(slug),
+            slug: createSlug(name),
             description,
             organizationId: organization.id,
             ownerId: userId,
           },
         })
+
         return reply.status(201).send({
           projectId: project.id,
         })

@@ -1,20 +1,21 @@
 import { type FormEvent, useState, useTransition } from 'react'
 
 interface FormState {
-  sucess: boolean
+  success: boolean
   message: string | null
   erros: Record<string, string[]> | null
 }
 
 export function useFormState(
   actions: (data: FormData) => Promise<FormState>,
+  onSuccess?: () => Promise<void> | void,
   initialState?: FormState,
 ) {
   const [isPending, startTransition] = useTransition()
 
   const [formState, setFormState] = useState(
     initialState ?? {
-      sucess: false,
+      success: false,
       message: null,
       erros: null,
     },

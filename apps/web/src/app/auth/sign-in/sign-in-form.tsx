@@ -16,13 +16,13 @@ import { signInWithGithub } from '../actions'
 import { signInWithEmailAndPassword } from './actions'
 
 export function SignInForm() {
-  const [{ erros, message, sucess }, handleSubmit, isPending] = useFormState(
+  const [{ erros, message, success }, handleSubmit, isPending] = useFormState(
     signInWithEmailAndPassword,
   )
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {sucess === false && message && (
+        {success === false && message && (
           <Alert variant="destructive">
             <AlertTriangle className="size-4" />
             <AlertTitle>Sign in failed</AlertTitle>
