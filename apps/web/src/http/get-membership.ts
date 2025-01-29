@@ -16,7 +16,7 @@ export async function getMembership(slug: string) {
     .get(`organization/${slug}/auth`)
     .json<GetMembershipResponse>()
 
-  console.log(result)
+  // console.log(result)
 
   return result
 }

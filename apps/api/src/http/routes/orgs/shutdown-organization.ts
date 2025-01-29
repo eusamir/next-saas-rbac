@@ -34,9 +34,9 @@ export async function deleteOrganization(app: FastifyInstance) {
         const { membership, organization } =
           await request.getUserMembership(slug)
 
-        const authOrganization = organizationSchema.parse({
-          organization,
-        })
+        const authOrganization = organizationSchema.parse(organization)
+
+        console.log(userId, membership, authOrganization)
 
         const { cannot } = getUserPermissions(userId, membership.role)
 

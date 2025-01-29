@@ -42,9 +42,7 @@ export async function updateOrganization(app: FastifyInstance) {
 
         const { name, domain, shouldAttachUsersByDomain } = request.body
 
-        const authOrganization = organizationSchema.parse({
-          organization,
-        })
+        const authOrganization = organizationSchema.parse(organization)
 
         const { cannot } = getUserPermissions(userId, membership.role)
 

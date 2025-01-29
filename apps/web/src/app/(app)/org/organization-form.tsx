@@ -8,12 +8,27 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-import { createOrganizationAction } from '../org/actions'
+import {
+  createOrganizationAction,
+  type OrganizationSchema,
+  updateOrganizationAction,
+} from './actions'
 
-export function OrganizationForm() {
-  const [{ erros, message, success }, handleSubmit, isPending] = useFormState(
-    createOrganizationAction,
-  )
+interface OrganizationFormProps {
+  isUpdating?: boolean
+  initialData?: OrganizationSchema
+}
+
+export function OrganizationForm({
+  isUpdating = false,
+  initialData,
+}: OrganizationFormProps) {
+  const formAction = isUpdating
+    ? updateOrganizationAction
+    : createOrganizationAction
+
+  const [{ erros, message, success }, handleSubmit, isPending] =
+    useFormState(formAction)
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {success === false && message && (
@@ -36,7 +51,12 @@ export function OrganizationForm() {
       )}
       <div className="space-y-1">
         <Label htmlFor="name">Organization name</Label>
-        <Input name="name" type="name" id="name" />
+        <Input
+          name="name"
+          type="name"
+          id="name"
+          defaultValue={initialData?.name}
+        />
         {erros?.name && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
             {erros.name[0]}
@@ -52,6 +72,7 @@ export function OrganizationForm() {
           id="domain"
           inputMode="url"
           placeholder="example.com"
+          defaultValue={initialData?.domain ?? undefined}
         />
         {erros?.domain && (
           <p className="text-xs font-medium text-red-500 dark:text-red-400">
@@ -66,6 +87,7 @@ export function OrganizationForm() {
             name="shouldAttachUsersByDomain"
             id="shouldAttachUsersByDomain"
             className="translate-y-0.5"
+            defaultChecked={initialData?.shouldAttachUsersByDomain}
           />
           <label htmlFor="shouldAttachUsersByDomain" className="space-y-1">
             <span>Auto joint new members</span>
