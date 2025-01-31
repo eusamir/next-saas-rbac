@@ -30,7 +30,7 @@ export async function signUpAction(data: FormData) {
   if (!result.success) {
     const erros = result.error.flatten().fieldErrors
 
-    return { sucess: false, message: null, erros }
+    return { success: false, message: null, erros }
   }
 
   const { name, email, password } = result.data
@@ -45,13 +45,13 @@ export async function signUpAction(data: FormData) {
     if (err instanceof HTTPError) {
       const { message } = await err.response.json()
 
-      return { sucess: false, message, erros: null }
+      return { success: false, message, erros: null }
     }
 
     console.log(err)
 
     return {
-      sucess: false,
+      success: false,
       message: 'Unexpected error, please try again in a few minutes.',
       erros: null,
     }
