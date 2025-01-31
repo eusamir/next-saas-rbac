@@ -1,6 +1,6 @@
 import { api } from './api-client'
 
-interface getProjectsResponse {
+interface GetProjectsResponse {
   projects: {
     name: string
     id: string
@@ -21,7 +21,7 @@ interface getProjectsResponse {
 export async function getProjects(slug: string) {
   const result = await api
     .get(`organizations/${slug}/projects`)
-    .json<getProjectsResponse>()
+    .json<GetProjectsResponse>()
 
   return result
 }
