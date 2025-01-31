@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { CheckCircle, LogIn, LogOut } from 'lucide-react'
-import type { GetServerSideProps } from 'next'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -20,21 +19,8 @@ interface InvitePageProps {
     id: string
   }
 }
-export const getServerSideProps: GetServerSideProps<InvitePageProps> = async (
-  context,
-) => {
-  const { id } = context.params as { id: string }
-  return {
-    props: {
-      params: {
-        id,
-      },
-    },
-  }
-}
 export default async function InvitePage({ params }: InvitePageProps) {
   const inviteId = params.id
-
   const { invite } = await getInvite(inviteId)
   const isUserAuthenticated = await IsAuthenticated()
 
@@ -72,11 +58,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
         <div className="flex flex-col items-center space-y-4">
           <Avatar className="size-16">
             {invite.author?.avatarUrl && (
-              <AvatarImage src={invite.author.avatarUrl} />
+              <AvatarImage src={`${invite.author.avatarUrl}`} />
             )}
             <AvatarFallback />
           </Avatar>
-
           <p className="text-balance text-center leading-relaxed text-muted-foreground">
             <span className="font-medium text-foreground">
               {invite.author?.name ?? 'Someone'}
@@ -84,14 +69,11 @@ export default async function InvitePage({ params }: InvitePageProps) {
             invited you to join{' '}
             <span className="font-medium text-foreground">
               {invite.organization.name}
-            </span>
-            .{' '}
-            <span className="text-xs">{dayjs(invite.createdAt).fromNow()}</span>
+            </span>{' '}
+            <span className="text-sm">{dayjs(invite.createdAt).fromNow()}</span>
           </p>
         </div>
-
         <Separator />
-
         {!isUserAuthenticated && (
           <form action={signInFromInvite}>
             <Button type="submit" variant="secondary" className="w-full">
@@ -100,7 +82,6 @@ export default async function InvitePage({ params }: InvitePageProps) {
             </Button>
           </form>
         )}
-
         {userIsAuthenticatedWithSameEmailFromInvite && (
           <form action={acceptInviteAction}>
             <Button type="submit" variant="secondary" className="w-full">
@@ -109,11 +90,10 @@ export default async function InvitePage({ params }: InvitePageProps) {
             </Button>
           </form>
         )}
-
         {isUserAuthenticated && !userIsAuthenticatedWithSameEmailFromInvite && (
           <div className="space-y-4">
             <p className="text-balance text-center text-sm leading-relaxed text-muted-foreground">
-              This invite was sent to{' '}
+              This inivite was sent to{' '}
               <span className="font-medium text-foreground">
                 {invite.email}
               </span>{' '}
@@ -121,9 +101,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
               <span className="font-medium text-foreground">
                 {currentUserEmail}
               </span>
-              .
             </p>
-
             <div className="space-y-2">
               <Button className="w-full" variant="secondary" asChild>
                 <a href="/api/auth/sign-out">
@@ -131,7 +109,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
                   Sign out from {currentUserEmail}
                 </a>
               </Button>
-
+            </div>
+            <div className="space-y-2">
               <Button className="w-full" variant="outline" asChild>
                 <Link href="/">Back to dashboard</Link>
               </Button>
