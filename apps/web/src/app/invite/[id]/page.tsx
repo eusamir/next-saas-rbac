@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { CheckCircle, LogIn, LogOut } from 'lucide-react'
+import type { GetServerSideProps } from 'next'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -17,6 +18,18 @@ dayjs.extend(relativeTime)
 interface InvitePageProps {
   params: {
     id: string
+  }
+}
+export const getServerSideProps: GetServerSideProps<InvitePageProps> = async (
+  context,
+) => {
+  const { id } = context.params as { id: string }
+  return {
+    props: {
+      params: {
+        id,
+      },
+    },
   }
 }
 export default async function InvitePage({ params }: InvitePageProps) {
