@@ -41,7 +41,7 @@ export async function ability() {
   return ability
 }
 
-export async function IsAuthenticated() {
+export async function IsAuthenticated(): Promise<boolean> {
   const cookie = await cookies()
   return !!cookie.get('token')?.value
 }
