@@ -52,7 +52,7 @@ export async function signUpAction(data: FormData) {
 
     return {
       success: false,
-      message: 'Unexpected error, please try again in a few minutes.',
+      message: 'Unexpected error please try again in a few minutes.',
       erros: null,
     }
   }
